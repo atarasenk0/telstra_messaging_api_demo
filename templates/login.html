@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>login</title>
+</head>
+<body>
+    <h2>Telstra Messaging API Demo</h2> 
+    <h4></h4>>
+    <form method = "post" action = "/">  
+    <table>  
+        <!--https://stackoverflow.com/questions/18392584/remove-spacing-between-p-->
+        <p style="margin-bottom:0;">Default email: [username@domain.com]</p>
+        <p style="margin : 0; padding-top:0;">Default password: [password]</p><br>
+        <tr><td>Email</td><td><input type = "email" name = "email" value="username@domain.com"></td></tr>  
+        <tr><td>Password</td><td><input type = "password" name = "pass"></td></tr>  
+        <tr><td><input type = "submit" name="submit_button" value = "Submit"></td></tr> 
+    </table> 
+    {% if error %}  
+        <p><strong>Error: </strong>{{error}}</p>  
+    {% endif %}  
+</body>
+</html>
