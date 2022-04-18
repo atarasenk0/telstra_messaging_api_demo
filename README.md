@@ -43,6 +43,7 @@ Application should now be running locally on the URL: http://127.0.0.1:5000/
 - Improve client design/appearance
 
 ### References
-- Telstra Dev account: [https://dev.telstra.com/tdev/user/register](https://dev.telstra.com/tdev/user/register)
-- Python SDK: [https://github.com/telstra/MessagingAPI-SDK-python/tree/refactor/modernize-sdk](https://github.com/telstra/MessagingAPI-SDK-python/tree/refactor/modernize-sdk)
-- How To Make a Web Application Using Flask in Python 3: [https://www.digitalocean.com/community/tutorials/how-to-make-a-web-application-using-flask-in-python-3](https://www.digitalocean.com/community/tutorials/how-to-make-a-web-application-using-flask-in-python-3)
+- [Telstra Dev Portal](https://dev.telstra.com/tdev/user/register)
+- [Messaging API Python SDK](https://github.com/telstra/MessagingAPI-SDK-python/tree/refactor/modernize-sdk)
+- [How To Make a Web Application Using Flask in Python 3](https://www.digitalocean.com/community/tutorials/how-to-make-a-web-application-using-flask-in-python-3)
+- [How to build a web application using Flask and deploy it to the cloud](https://www.freecodecamp.org/news/how-to-build-a-web-application-using-flask-and-deploy-it-to-the-cloud-3551c985e492/)
