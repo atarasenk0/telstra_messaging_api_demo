@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 
+# A.Tarasenko
+# https://github.com/atarasenk0/telstra_messaging_api_demo.git
+
 from flask import Flask, render_template, request, flash, redirect, url_for
 from tls.messaging.utils.config import CONFIG
 from tls.messaging.utils import phone_number
@@ -10,11 +13,12 @@ from tls.messaging import exceptions
 
 # ---------------------------------------------------------
 # Modify these attributes/variables/constants only
+# No secure hashes implemented in the interest of time
 # ---------------------------------------------------------
-DEBUG            = True
-register_numbers = ["0435123456"]
-client_key       = "DXyWZKp4dQxFBOhQYLtAH3pnyAT8f9j"
-client_secret    = "fiHDlraTXML8kb0"
+DEBUG            = False
+register_numbers = ["0412345678"]
+client_key       = "<client_key>"
+client_secret    = "<client_secret>"
 flask_secret_key = "abc"
 # ---------------------------------------------------------
 
@@ -40,17 +44,20 @@ if DEBUG:
 # https://github.com/telstra/MessagingAPI-SDK-python/tree/refactor/modernize-sdk#registering-destinations
 # ---------------------------------------------------------
 # TODO: check if the registered numbers field is empty?
-try:
-    phone_numbers = bnum.register(phone_numbers=register_numbers)
-    if DEBUG:
-        print("Number(s) to register: %s\n" % phone_numbers)
-    
-    retrieved_numbers = bnum.get()
-    if DEBUG:
-        print("Registered number(s): %s\n" % retrieved_numbers)
+def register_target_numbers():
+    try:
+        phone_numbers = bnum.register(phone_numbers=register_numbers)
+        if DEBUG:
+            print("Number(s) to register: %s\n" % phone_numbers)
+        
+        retrieved_numbers = bnum.get()
+        if DEBUG:
+            print("Registered number(s): %s\n" % retrieved_numbers)
 
-except exceptions.BnumError as e:
-    print("Exception when calling bnum.register: %s\n" % e)
+        return True
+    except exceptions.BnumError as e:
+        print("Exception when calling bnum.register: %s\n" % e)
+        return False
 # ---------------------------------------------------------
 
 
@@ -60,17 +67,20 @@ except exceptions.BnumError as e:
 # https://github.com/telstra/MessagingAPI-SDK-python/tree/refactor/modernize-sdk#subscription
 # ---------------------------------------------------------
 # TODO: check if the assigned number already exists?
-try: 
-    created_subscription = subscription.create()
-    if DEBUG:
-        print("Subscription object: %s\n" % created_subscription)
-    
-    retrieved_subscription = subscription.get()
-    if DEBUG:
-        print("Subscribed object: %s\n" % retrieved_subscription)
+def acquire_subscription():
+    try: 
+        created_subscription = subscription.create()
+        if DEBUG:
+            print("Subscription object: %s\n" % created_subscription)
+        
+        retrieved_subscription = subscription.get()
+        if DEBUG:
+            print("Subscribed object: %s\n" % retrieved_subscription)
 
-except exceptions.SubscriptionError as e: 
-    print("Exception when calling subscription.create: %s\n" % e)
+        return True
+    except exceptions.SubscriptionError as e: 
+        print("Exception when calling subscription.create: %s\n" % e)
+        return False
 # ---------------------------------------------------------
 
 
@@ -88,12 +98,13 @@ def get_status_sms(sent_sms):
         return status
     except exceptions.SmsError as e: 
         print("Exception when calling sms.send: %s\n" % e)
-        return -1
+        return None
 # ---------------------------------------------------------
 
 
 # ---------------------------------------------------------
 # Function for acquiring the inbound SMS 
+# Not performing any strict message content checking i.e. alphanumeric/spaces/special characters
 # https://dev.telstra.com/content/messaging-api#operation/retrieveInboundSms
 # https://github.com/telstra/MessagingAPI-SDK-python/tree/refactor/modernize-sdk#retrieve-reply
 # ---------------------------------------------------------
@@ -107,7 +118,7 @@ def get_reply_sms():
         return reply_sms
     except exceptions.SmsError as e:
         print("Exception when calling sms.get_next_unread_reply: %s\n" % e)
-        return -1
+        return None
 # ---------------------------------------------------------
 
 
@@ -129,12 +140,13 @@ def send_sms(sender_name, recipient_number, recipient_message):
         return sent_sms
     except exceptions.SmsError as e: 
         print("Exception when calling sms.send: %s\n" % e)
-        return -1
+        return None
 # ---------------------------------------------------------
 
 
 # ---------------------------------------------------------
 # Using flask web framework to interact with client page
+# Flask communicates with the client side via HTTP requests
 # https://www.digitalocean.com/community/tutorials/how-to-make-a-web-application-using-flask-in-python-3
 # https://www.javatpoint.com/flask-flashing
 # ---------------------------------------------------------
@@ -151,6 +163,8 @@ def index():
     
     if request.method == 'POST':
         if request.form.get("submit_button") == "Send":
+
+            # Get client side inputs
             sender_name       = request.form.get('senderName')
             recipient_number  = request.form.get('recipientNumber')
             recipient_message = request.form.get('recipientMessage')
@@ -159,6 +173,8 @@ def index():
             name_valid    = len(str(sender_name)) > 0
             number_valid  = phone_number.check(recipient_number)
             message_valid = len(str(recipient_message)) > 0
+            number_registered = (recipient_number in bnum.get())
+            # TODO: need additional logic to match +61XXX to 04XXX equivalent
 
             # Only send sms if input is valid
             # No additional processing of status_sms.delivery_status beyond default 
@@ -195,7 +211,21 @@ def index():
 # ---------------------------------------------------------
 @app.route('/', methods = ["GET","POST"])  
 def login():  
-    error = None;  
+    error = None
+
+    # Doing the server side setup when user reaches the login.html page
+    # Current implementation -> performs number registration/provision with every interaction on login.html
+    # TODO: redo since this is not good practice...
+    #secret_status        = setup_credentials()
+    bnum_register_status = register_target_numbers()
+    subscription_status  = acquire_subscription()
+
+    # Check status of the server/API initialisation
+    if (bnum_register_status and subscription_status):
+        pass
+    else:
+        error = "Error during server initialisation..."
+
     if request.method == "POST":  
         if request.form.get("submit_button") == "Submit":
             if request.form['pass'] != 'password':  
@@ -208,3 +238,4 @@ def login():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
