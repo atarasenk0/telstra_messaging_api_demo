@@ -15,7 +15,7 @@ class test_data_template:
     recipient_number: str
     message:          str
 
-test_data = test_data_template("Bob", "0435173413", "0435173413", "Message placeholder")
+test_data = test_data_template("Bob", "0412345678", "0412345678", "Message placeholder")
 
 # ---------------------------------------------------------
 # Test number registration
