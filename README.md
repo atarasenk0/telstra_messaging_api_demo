@@ -36,6 +36,13 @@ Finally, run the application:
 
 Application should now be running locally on the URL: http://127.0.0.1:5000/
 
+### Wish list
+- Containerisation / public hosting of the application
+- Perform proper session authentication
+- Maintain user input even after a submit event (i.e. avoid page refreshes)
+- Improve client design/appearance
+
 ### References
 - Telstra Dev account: [https://dev.telstra.com/tdev/user/register](https://dev.telstra.com/tdev/user/register)
 - Python SDK: [https://github.com/telstra/MessagingAPI-SDK-python/tree/refactor/modernize-sdk](https://github.com/telstra/MessagingAPI-SDK-python/tree/refactor/modernize-sdk)
+- How To Make a Web Application Using Flask in Python 3: [https://www.digitalocean.com/community/tutorials/how-to-make-a-web-application-using-flask-in-python-3](https://www.digitalocean.com/community/tutorials/how-to-make-a-web-application-using-flask-in-python-3)
